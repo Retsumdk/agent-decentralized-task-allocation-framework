@@ -3,15 +3,51 @@
   "description": "Framework for distributed task allocation among agents with fairness and load balancing algorithms",
   "version": "1.0.0",
   "type": "module",
-  "scripts": {
-    "test": "bun test",
-    "build": "tsc"
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
-  "dependencies": {
-    "commander": "^11.1.0"
+  "bin": {
+    "agent-task-allocator": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "bun test",
+    "demo": "node dist/cli.js demo",
+    "prepare": "tsc -p tsconfig.build.json"
+  },
+  "keywords": [
+    "agent-fleets",
+    "task-allocation",
+    "load-balancing",
+    "fairness",
+    "deficit-round-robin",
+    "multi-agent",
+    "scheduler",
+    "workload-distribution"
+  ],
+  "license": "MIT",
+  "author": "Retsumdk <Retsumdk@users.noreply.github.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Retsumdk/agent-decentralized-task-allocation-framework.git"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "devDependencies": {
-    "bun-types": "^1.0.0",
-    "typescript": "^5.3.0"
+    "@types/node": "^26.6.5",
+    "bun-types": "^1.4.3",
+    "typescript": "^7.0.2"
   }
 }

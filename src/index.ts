@@ -1,51 +1,36 @@
-#!/usr/bin/env bun
 /**
- * agent-decentralized-task-allocation-framework - Framework for distributed task allocation among agents with fairness and load balancing algorithms
- * Built by Retsumdk
+ * agent-decentralized-task-allocation-framework — public API.
+ *
+ * Assign queued tasks to registered agents under fairness and
+ * load-balancing strategies, with capability matching, heartbeat-based
+ * lease recovery, and optional durable state.
  */
-
-import { Command } from "commander";
-import { existsSync, readFileSync } from "fs";
-import { join } from "path";
-
-interface Config {
-  apiKey?: string;
-  baseUrl: string;
-  timeout: number;
-  retries: number;
-}
-
-const DEFAULTS: Config = {
-  baseUrl: "https://api.example.com",
-  timeout: 30000,
-  retries: 3,
-};
-
-function loadConfig(): Config {
-  const cfgPath = join(process.cwd(), "config.json");
-  if (existsSync(cfgPath)) {
-    try {
-      return { ...DEFAULTS, ...JSON.parse(readFileSync(cfgPath, "utf-8")) };
-    } catch { /* ignore */ }
-  }
-  return { ...DEFAULTS };
-}
-
-async function main(cfg: Config) {
-  console.log(`[${name}] Connected to ${cfg.baseUrl}`);
-  console.log(`[${name}] Timeout: ${cfg.timeout}ms | Retries: ${cfg.retries}`);
-  // TODO: implement your logic here
-  console.log(`[${name}] Done.`);
-}
-
-const program = new Command();
-program.name("agent-decentralized-task-allocation-framework").description("Framework for distributed task allocation among agents with fairness and load balancing algorithms").version("1.0.0")
-  .option("-c, --config <path>", "Config file path", "config.json")
-  .option("-v, --verbose", "Verbose mode")
-  .action(async (opts) => {
-    const cfg = loadConfig();
-    if (opts.verbose) console.log("Verbose mode on");
-    try { await main(cfg); }
-    catch (e) { console.error(`Error: ${e}`); process.exit(1); }
-  });
-program.parse(process.argv);
+export { Allocator, parseStrategy } from "./allocator.js";
+export type { AllocatorOptions } from "./allocator.js";
+export { AgentRegistry, satisfiesCapabilities } from "./registry.js";
+export type { RegistryState } from "./registry.js";
+export { TaskStore, sortQueued } from "./tasks.js";
+export type { TaskStoreState } from "./tasks.js";
+export { AllocationError, isAllocationError } from "./errors.js";
+export { jainFairnessIndex, weightedShares, replenishDeficit, canPay, payDeficit } from "./fairness.js";
+export { createAllocatorServer, type ServerOptions } from "./server.js";
+export { loadState, saveState, toStateEnvelope } from "./persistence.js";
+export type {
+  Agent,
+  AgentInput,
+  AgentPatch,
+  AgentStatus,
+  AllocateResult,
+  AllocationStrategy,
+  AllocatorConfig,
+  Assignment,
+  Stats,
+  StrategyBreakdown,
+  Task,
+  TaskEvent,
+  TaskInput,
+  TaskStatus,
+  TickResult,
+} from "./types.js";
+export { DEFAULT_CONFIG, MAX_TASK_COST, MAX_PRIORITY } from "./types.js";
+export { demo } from "./demo.js";
