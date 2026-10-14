@@ -91,13 +91,15 @@ bun src/cli.ts demo
 **Install as a library from GitHub** (the package is not on the npm registry; git installs run the `prepare` script, which compiles `dist/`):
 
 ```bash
-npm install github:Retsumdk/agent-decentralized-task-allocation-framework
+npm install github:Retsumdk/agent-decentralized-task-allocation-framework#v1.0.0
 ```
+
+Drop the `#v1.0.0` suffix to track `main` instead of the tagged release.
 
 With Bun, lifecycle scripts of git dependencies are blocked by default — trust the package once after installing, or the import will fail:
 
 ```bash
-bun add github:Retsumdk/agent-decentralized-task-allocation-framework
+bun add github:Retsumdk/agent-decentralized-task-allocation-framework#v1.0.0
 bun pm trust agent-decentralized-task-allocation-framework
 ```
 
