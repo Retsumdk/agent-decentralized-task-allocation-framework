@@ -319,6 +319,10 @@ Part of a series on agent operations primitives:
 - [serverless-retry-queue](https://github.com/Retsumdk/serverless-retry-queue) — retry/backoff scheduling with the same dead-letter discipline
 - [gcs-job-scheduler](https://github.com/Retsumdk/gcs-job-scheduler) — cron-style scheduling for maintenance jobs
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md). The current release is **v1.0.0**.
+
 ## License
 
 [MIT](LICENSE) — Copyright (c) 2026 Retsumdk
