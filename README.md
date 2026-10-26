@@ -3,6 +3,9 @@
 Distributed task allocation for agent fleets — capability matching, three load-balancing strategies (including deficit round robin for weight-proportional fairness), heartbeat-based lease recovery, retry with dead-lettering, an optional durable state file, a zero-dependency HTTP API, and a CLI.
 
 MIT licensed. Zero runtime dependencies. Node >= 20.
+**Try it in your browser:** [retsumdk.github.io/agent-decentralized-task-allocation-framework](https://retsumdk.github.io/agent-decentralized-task-allocation-framework/) runs the allocator live on a nine-task queue. Pick a strategy, complete work, lapse a heartbeat and watch lease recovery and the Jain fairness index move. No install, nothing to configure.
+
+[![Three agents, a task queue and the fairness index, in the browser demo](https://raw.githubusercontent.com/Retsumdk/agent-decentralized-task-allocation-framework/main/docs/demo.png)](https://retsumdk.github.io/agent-decentralized-task-allocation-framework/)
 
 ## Why this exists
 

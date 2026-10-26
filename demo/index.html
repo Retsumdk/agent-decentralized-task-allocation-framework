@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>agent-decentralized-task-allocation-framework - live demo</title>
+    <link rel="canonical" href="https://github.com/Retsumdk/agent-decentralized-task-allocation-framework" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0f1115;
+        --panel: #171a21;
+        --line: #262b36;
+        --fg: #e6e9ef;
+        --muted: #98a2b3;
+        --accent: #7aa2f7;
+        --ok: #7bc86c;
+        --warn: #e0af68;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 32px 20px 64px;
+        background: var(--bg);
+        color: var(--fg);
+        font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      }
+      main { max-width: 1040px; margin: 0 auto; }
+      h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
+      .sub { color: var(--muted); margin: 0 0 24px; }
+      .sub a { color: var(--accent); text-decoration: none; }
+      .bar-controls {
+        display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+        margin-bottom: 20px; padding: 14px; background: var(--panel);
+        border: 1px solid var(--line); border-radius: 10px;
+      }
+      button, select {
+        font: inherit; color: var(--fg); background: #1e2430;
+        border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px;
+      }
+      button { cursor: pointer; }
+      button:hover { border-color: var(--accent); }
+      button.primary { background: #223055; border-color: #35507f; }
+      label { color: var(--muted); font-size: 13px; }
+      .grid { display: grid; gap: 16px; grid-template-columns: 1.15fr 1fr; }
+      @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+      section { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+      h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 10px; }
+      table { width: 100%; border-collapse: collapse; font-size: 13px; }
+      th { text-align: left; color: var(--muted); font-weight: 500; padding: 4px 6px; }
+      td { padding: 5px 6px; border-top: 1px solid var(--line); vertical-align: middle; }
+      td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+      code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+      tr.stale td { opacity: 0.55; }
+      .cap { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 999px; background: #1d2a44; color: #a9c1f0; }
+      .badge { font-size: 11px; padding: 1px 7px; border-radius: 999px; background: #1e2430; color: var(--muted); }
+      .badge.running { background: #1f3327; color: var(--ok); }
+      .badge.completed { background: #202a3a; color: var(--accent); }
+      .badge.dead { background: #3a2020; color: #e06c6c; }
+      .badge.stale { background: #3a2f1e; color: var(--warn); }
+      .bar { display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #202633; overflow: hidden; vertical-align: middle; margin-right: 6px; }
+      .bar span { display: block; height: 100%; background: var(--accent); }
+      #stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+      .stat { flex: 1 1 120px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+      .stat span { display: block; color: var(--muted); font-size: 12px; }
+      .stat strong { font-size: 18px; font-variant-numeric: tabular-nums; }
+      #log {
+        white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px; color: var(--muted); max-height: 260px; overflow: auto; margin: 0;
+      }
+      footer { margin-top: 22px; color: var(--muted); font-size: 12px; }
+      footer a { color: var(--accent); text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>agent-decentralized-task-allocation-framework</h1>
+      <p class="sub">
+        Capability matching, three load-balancing strategies, heartbeat leases and retry accounting for
+        agent fleets - running live in your browser.
+        <a href="https://github.com/Retsumdk/agent-decentralized-task-allocation-framework">Source</a>
+      </p>
+
+      <div class="bar-controls">
+        <label for="strategy">Strategy</label>
+        <select id="strategy">
+          <option value="least-loaded">least-loaded</option>
+          <option value="round-robin">round-robin</option>
+          <option value="pack">pack</option>
+        </select>
+        <button id="allocate" class="primary">Allocate a round</button>
+        <button id="complete">Complete running</button>
+        <button id="lapse">Lapse an agent's heartbeat</button>
+        <button id="reset">Reset</button>
+      </div>
+
+      <div id="stats"></div>
+
+      <div class="grid">
+        <section>
+          <h2>Agents</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>capabilities</th>
+                <th class="num">cap / weight</th>
+                <th class="num">running</th>
+                <th class="num">done</th>
+                <th>utilization</th>
+              </tr>
+            </thead>
+            <tbody id="agents"></tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>Task queue</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>requires</th>
+                <th class="num">prio</th>
+                <th>status</th>
+                <th>agent</th>
+              </tr>
+            </thead>
+            <tbody id="tasks"></tbody>
+          </table>
+        </section>
+      </div>
+
+      <section style="margin-top: 16px">
+        <h2>Round log</h2>
+        <pre id="log"></pre>
+      </section>
+
+      <footer>
+        Every button drives the published library: <code>allocate()</code>, <code>complete()</code>,
+        <code>tick()</code> and <code>stats()</code>. The clock is virtual, so a lease expiry costs one click.
+      </footer>
+    </main>
+    <script src="./demo.js"></script>
+  </body>
+</html>

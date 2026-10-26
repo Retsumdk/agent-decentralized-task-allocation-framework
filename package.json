@@ -25,6 +25,7 @@
     "build": "tsc -p tsconfig.build.json",
     "test": "bun test",
     "demo": "node dist/cli.js demo",
+    "demo:build": "bun build demo/main.ts --outfile docs/demo.js --target browser --format iife",
     "prepare": "tsc -p tsconfig.build.json"
   },
   "keywords": [
